@@ -12,9 +12,16 @@ public class NativeVoteApiTest: BasePlugin
     public override string ModuleName => "NativeVoteAPI test";
     public override string ModuleVersion => "0.0.1";
 
-    
-    public INativeVoteApi? nativeVoteApi { get; set; }
-    private PluginCapability<INativeVoteApi> ApiCapability { get; } = new("nativevote:api");
+
+    public static INativeVoteApi? nativeVoteApi;
+
+    private INativeVoteApi GetAPI()
+    {
+        if (nativeVoteApi == null)
+            nativeVoteApi = INativeVoteApi.Capability.Get();
+
+        return nativeVoteApi;
+    }
     
     public override void Load(bool hotReload)
     {
@@ -24,7 +31,7 @@ public class NativeVoteApiTest: BasePlugin
     {
         try
         {
-            nativeVoteApi = ApiCapability.Get();
+            GetAPI();
         }
         catch (Exception e)
         {
@@ -32,11 +39,7 @@ public class NativeVoteApiTest: BasePlugin
 
         if (nativeVoteApi == null)
         {
-            Server.PrintToConsole("NativeVote API is not available. trying to get a native vote api again.");
-            this.AddTimer(4.0F, () =>
-            {
-                Load(hotReload);
-            });
+            Server.PrintToConsole("NativeVote API is not available.");
             return;
         }
         

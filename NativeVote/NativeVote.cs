@@ -15,8 +15,7 @@ public class NativeVoteApi: BasePlugin, INativeVoteApi
     public override string ModuleVersion => "0.0.1";
     public override string ModuleAuthor => "tuna";
 
-    public INativeVoteApi ApiInstance = null!;
-    private static PluginCapability<INativeVoteApi> ApiCapability { get; } = new("nativevote:api");
+    public static INativeVoteApi ApiInstance = null!;
 
     private VoteManager? _voteManager;
     
@@ -26,8 +25,7 @@ public class NativeVoteApi: BasePlugin, INativeVoteApi
         _voteManager.Load();
 
         ApiInstance = this;
-        Capabilities.RegisterPluginCapability(ApiCapability, () => ApiInstance);
-        
+        Capabilities.RegisterPluginCapability(INativeVoteApi.Capability, () => ApiInstance);
     }
 
     public override void Unload(bool hotReload)

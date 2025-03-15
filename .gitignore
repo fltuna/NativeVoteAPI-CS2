@@ -2,7 +2,10 @@
 
 NativeVoteAPI/bin/*
 NativeVoteAPI/obj/*
+NativeVote/bin/*
+NativeVote/obj/*
 NativeVoteAPITest/bin/*
 NativeVoteAPITest/obj/*
 
-Folder.DotSettings.user
+*DotSettings.user
+NativeVoteAPI.sln.DotSettings.user
