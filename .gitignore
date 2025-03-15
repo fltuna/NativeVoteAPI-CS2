@@ -1,0 +1,8 @@
+﻿.idea
+
+NativeVoteAPI/bin/*
+NativeVoteAPI/obj/*
+NativeVoteAPITest/bin/*
+NativeVoteAPITest/obj/*
+
+Folder.DotSettings.user
