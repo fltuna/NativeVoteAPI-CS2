@@ -127,6 +127,7 @@ jobs:
         
       - name: Pack
         run: dotnet pack --configuration Release
+        working-directory: NativeVoteAPI
         
       - name: Extract version
         id: package_version
@@ -139,3 +140,4 @@ jobs:
       - name: Publish to Nuget
         run: |
           dotnet nuget push "bin/Release/NativeVoteAPI${{env.VERSION}}.nupkg" --api-key ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
+        working-directory: NativeVoteAPI
