@@ -139,5 +139,5 @@ jobs:
         
       - name: Publish to Nuget
         run: |
-          dotnet nuget push "bin/Release/NativeVoteAPI${{env.VERSION}}.nupkg" --api-key ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
+          dotnet nuget push "bin/Release/NativeVoteAPI-CS2${{env.VERSION}}.nupkg" --api-key ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
         working-directory: NativeVoteAPI
