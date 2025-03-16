@@ -122,13 +122,17 @@ jobs:
         run: dotnet restore
         working-directory: NativeVoteAPI
         
-      - name: Build
-        run: dotnet build NativeVoteAPI\NativeVoteAPI.csproj --no-restore
+      - name: Pack
+        run: dotnet pack --configuration Release
         
-      - name: Publish to NuGet
-        uses: brandedoutcast/publish-nuget@v2
-        with:
-          PROJECT_FILE_PATH: NativeVoteAPI/NativeVoteAPI.csproj
-          VERSION_REGEX: '^\s*<PackageVersion>(.*)<\/PackageVersion>\s*$'
-          TAG_FORMAT: '*'
-          NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+      - name: Extract version
+        id: package_version
+        run: |
+          $xml = [Xml] (Get-Content NativeVoteAPI/NativeVoteAPI.csproj)
+          $version = $xml.Project.PropertyGroup.PackageVersion
+          echo "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Append
+        shell: pwsh
+        
+      - name: Publish to Nuget
+        run: |
+          dotnet nuget push "bin/Release/NativeVoteAPI${{env.VERSION}}.nupkg" --api-key ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
