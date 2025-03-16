@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <PackageId>NativeVoteAPI</PackageId>
+        <PackageId>NativeVoteAPI-CS2</PackageId>
         <Title>NativeVoteAPI</Title>
         <Description>
         Use CS2 native vote easily
