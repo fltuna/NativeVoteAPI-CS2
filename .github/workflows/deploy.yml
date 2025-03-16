@@ -121,6 +121,9 @@ jobs:
       - name: Install dependencies
         run: dotnet restore
         working-directory: NativeVoteAPI
+
+      - name: Build
+        run: dotnet build -c Release -p:DebugType=None -p:DebugSymbols=false
         
       - name: Pack
         run: dotnet pack --configuration Release
