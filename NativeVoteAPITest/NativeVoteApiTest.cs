@@ -1,6 +1,5 @@
 ﻿using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
-using CounterStrikeSharp.API.Core.Capabilities;
 using CounterStrikeSharp.API.Modules.Commands;
 using NativeVoteAPI;
 using NativeVoteAPI.API;
@@ -83,14 +82,23 @@ public class NativeVoteApiTest: BasePlugin
         var potentialClients = Utilities.GetPlayers().Where(p => p is { IsBot: false, IsHLTV: false }).ToList();
         var potentialClientsIndex = potentialClients.Select(p => p.Index).ToList();
         
+        
         // You can only use builtin SFUI_vote texts in display string.
         // for instance, you can use these strings:
         // #SFUI_vote_passed_nextlevel_extend -> can be use the details string (custom string)
         // #SFUI_Vote_None -> blank vote
         //
-        // Another arguments information is provided in code document, see NativeVoteInfo.cs
+        // Or you can use custom file for fully customizable text. See README.md
         //
-        NativeVoteInfo nInfo = new NativeVoteInfo("TEST_VOTE!", "#SFUI_Vote_loadbackup" ,"Details STR あああああああああ", potentialClientsIndex, VoteThresholdType.AbsoluteValue, 0.5F, 5.0F);
+        string displayString = "#SFUI_Vote_None";
+        string detailsString = "";
+        
+        // You can set vote identifier to check your vote in OnVotePass, OnVoteFail, OnVoteCancel.
+        string voteIdentifier = "TEST_VOTE!";
+        
+        // arguments information is provided in code document, see NativeVoteInfo.cs
+        //NativeVoteInfo nInfo = new NativeVoteInfo("TEST_VOTE!", "#SFUI_vote_panorama_vote_default" ,"Details STR あああああああああ", potentialClientsIndex, VoteThresholdType.AbsoluteValue, 0.5F, 5.0F);
+        NativeVoteInfo nInfo = new NativeVoteInfo(voteIdentifier, displayString ,detailsString, potentialClientsIndex, VoteThresholdType.AbsoluteValue, 0.5F, 5.0F);
 
         // When vote successfully initiated, it will return InitializeAccepted
         NativeVoteState state = _nativeVoteApi.InitiateVote(nInfo);
