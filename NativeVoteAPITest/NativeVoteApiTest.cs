@@ -19,6 +19,7 @@ public class NativeVoteApiTest: BasePlugin
     {
     }
 
+    // You should initialize plugin capability on OnAllPluginsLoaded 
     public override void OnAllPluginsLoaded(bool hotReload)
     {
         // When NativeVoteAPI is not loaded, it will throw the exception ->
@@ -91,6 +92,7 @@ public class NativeVoteApiTest: BasePlugin
         //
         NativeVoteInfo nInfo = new NativeVoteInfo("TEST_VOTE!", "#SFUI_Vote_loadbackup" ,"Details STR あああああああああ", potentialClientsIndex, VoteThresholdType.AbsoluteValue, 0.5F, 5.0F);
 
+        // When vote successfully initiated, it will return InitializeAccepted
         NativeVoteState state = _nativeVoteApi.InitiateVote(nInfo);
 
 
@@ -115,6 +117,7 @@ public class NativeVoteApiTest: BasePlugin
         if(client == null)
             return;
         
+        // When vote successfully to initiating cancel, it will return Cancelling
         NativeVoteState state = _nativeVoteApi.CancelVote();
         
         
