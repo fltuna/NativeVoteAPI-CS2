@@ -97,7 +97,6 @@ public class NativeVoteApiTest: BasePlugin
         string voteIdentifier = "TEST_VOTE!";
         
         // arguments information is provided in code document, see NativeVoteInfo.cs
-        //NativeVoteInfo nInfo = new NativeVoteInfo("TEST_VOTE!", "#SFUI_vote_panorama_vote_default" ,"Details STR あああああああああ", potentialClientsIndex, VoteThresholdType.AbsoluteValue, 0.5F, 5.0F);
         NativeVoteInfo nInfo = new NativeVoteInfo(voteIdentifier, displayString ,detailsString, potentialClientsIndex, VoteThresholdType.AbsoluteValue, 0.5F, 5.0F);
 
         // When vote successfully initiated, it will return InitializeAccepted
