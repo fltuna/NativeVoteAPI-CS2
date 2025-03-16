@@ -13,16 +13,7 @@ public class NativeVoteApiTest: BasePlugin
     public override string ModuleVersion => "0.0.1";
 
     // Declare the nativeVoteApi variable like this
-    public static INativeVoteApi? nativeVoteApi;
-
-    // This is optional, but useful property.
-    private INativeVoteApi GetAPI()
-    {
-        if (nativeVoteApi == null)
-            nativeVoteApi = INativeVoteApi.Capability.Get();
-
-        return nativeVoteApi;
-    }
+    private static INativeVoteApi? _nativeVoteApi;
     
     public override void Load(bool hotReload)
     {
@@ -33,44 +24,57 @@ public class NativeVoteApiTest: BasePlugin
         // When NativeVoteAPI is not loaded, it will throw the exception ->
         try
         {
-            GetAPI();
+            _nativeVoteApi = INativeVoteApi.Capability.Get();
         }
         catch (Exception e)
         {
+            // Ignored because plugin will stop loading.
         }
 
         // -> And plugin should stop loading or implement some feature to block the NativeVoteAPI from using.
-        if (nativeVoteApi == null)
+        if (_nativeVoteApi == null)
         {
             Server.PrintToConsole("NativeVote API is not available.");
             return;
         }
         
         // To register OnVotePass listener
-        nativeVoteApi.OnVotePass += info =>
+        _nativeVoteApi.OnVotePass += info =>
         {
             Server.PrintToChatAll($"{info!.VoteInfo.voteIdentifier}");
             Server.PrintToChatAll("Vote passed!!!");
         };
         
         // To register OnVoteFail listener
-        nativeVoteApi.OnVoteFail += info =>
+        _nativeVoteApi.OnVoteFail += info =>
         {
             Server.PrintToChatAll($"{info!.VoteInfo.voteIdentifier}");
             Server.PrintToChatAll("Vote failed!!!");
         };
         
+        // To register OnVoteCancel listener
+        _nativeVoteApi.OnVoteCancel += info =>
+        {
+            Server.PrintToChatAll($"{info!.VoteInfo.voteIdentifier}");
+            Server.PrintToChatAll("Vote cancelled!!!");
+        };
+        
         this.AddCommand("css_tsvote", "Initiate test vote", CmdInitiateVote);
+        this.AddCommand("css_tcvote", "Cancel test vote", CmdCancelVote);
     }
 
     public override void Unload(bool hotReload)
     {
         this.RemoveCommand("css_tsvote", CmdInitiateVote);
+        this.RemoveCommand("css_tcvote", CmdCancelVote);
     }
 
 
     private void CmdInitiateVote(CCSPlayerController? client, CommandInfo info)
     {
+        if (_nativeVoteApi == null)
+            return;
+        
         if(client == null)
             return;
         
@@ -87,6 +91,46 @@ public class NativeVoteApiTest: BasePlugin
         //
         NativeVoteInfo nInfo = new NativeVoteInfo("TEST_VOTE!", "#SFUI_Vote_loadbackup" ,"Details STR あああああああああ", potentialClientsIndex, VoteThresholdType.AbsoluteValue, 0.5F, 5.0F);
 
-        nativeVoteApi.InitiateVote(nInfo);
+        NativeVoteState state = _nativeVoteApi.InitiateVote(nInfo);
+
+
+        switch (state)
+        {
+            case NativeVoteState.InitializeAccepted:
+                client.PrintToChat("Starting vote.");
+                break;
+            
+            default:
+                client.PrintToChat("Vote is already in progress!");
+                break;
+        }
+    }
+
+
+    private void CmdCancelVote(CCSPlayerController? client, CommandInfo info)
+    {
+        if (_nativeVoteApi == null)
+            return;
+        
+        if(client == null)
+            return;
+        
+        NativeVoteState state = _nativeVoteApi.CancelVote();
+        
+        
+        switch (state)
+        {
+            case NativeVoteState.Cancelling:
+                client.PrintToChat("Cancelling the vote.");
+                break;
+            
+            case NativeVoteState.NoActiveVote:
+                client.PrintToChat("There is no active vote!");
+                break;
+                
+            default:
+                client.PrintToChat("Something went wrong!");
+                break;
+        }
     }
 }

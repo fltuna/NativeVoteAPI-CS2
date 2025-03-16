@@ -47,10 +47,16 @@ public class NativeVoteApi: BasePlugin, INativeVoteApi
     {
         OnVotePass?.Invoke(voteInfo);
     }
+
+    public void InvokeVoteCancelEvent(YesNoVoteInfo? voteInfo = null)
+    {
+        OnVoteCancel?.Invoke(voteInfo);
+    }
     
     
     public event Action<YesNoVoteInfo?>? OnVoteFail;
     public event Action<YesNoVoteInfo?>? OnVotePass;
+    public event Action<YesNoVoteInfo?>? OnVoteCancel;
     
     public NativeVoteState InitiateVote(NativeVoteInfo vote)
     {

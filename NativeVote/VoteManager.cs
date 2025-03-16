@@ -205,6 +205,12 @@ class VoteManager(NativeVoteApi plugin)
         if (!_voteInProgress || _currentVoteState == NativeVoteState.NoActiveVote)
             return _currentVoteState;
 
+        endVoteTimer?.Kill();
+        _currentVoteState = NativeVoteState.Cancelling;
+        
+        SendVoteFailUmAll();
+        _plugin.InvokeVoteCancelEvent(_currentVote);
+        DelayedVoteFinishUpdate();
 
         return NativeVoteState.Cancelling;
     }

@@ -8,6 +8,7 @@ public interface INativeVoteApi
     
     public event Action<YesNoVoteInfo?> OnVoteFail;
     public event Action<YesNoVoteInfo?> OnVotePass;
+    public event Action<YesNoVoteInfo?> OnVoteCancel;
     
     /// <summary>
     /// Initiates a vote with the given IVote object.
