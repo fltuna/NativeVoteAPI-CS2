@@ -24,7 +24,7 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Install dependencies
-        run: nuget restore
+        run: dotnet restore
 
       - name: Build
         run: dotnet build -c Release -p:DebugType=None -p:DebugSymbols=false
@@ -43,7 +43,7 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Install dependencies
-        run: nuget restore
+        run: dotnet restore
 
       - name: Build
         run: dotnet build -c Release -p:DebugType=None -p:DebugSymbols=false
@@ -105,3 +105,30 @@ jobs:
           asset_name: NativeVoteAPI.zip
           asset_content_type: application/zip
         
+  
+  publish-nuget:
+    runs-on: windows-latest
+    needs: release
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup .NET
+        
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '8.0.x'
+          
+      - name: Install dependencies
+        run: dotnet restore
+        working-directory: NativeVoteAPI
+        
+      - name: Build
+        run: dotnet build NativeVoteAPI\NativeVoteAPI.csproj --no-restore
+        
+      - name: Publish to NuGet
+        uses: brandedoutcast/publish-nuget@v2
+        with:
+          PROJECT_FILE_PATH: NativeVoteAPI/NativeVoteAPI.csproj
+          VERSION_REGEX: '^\s*<PackageVersion>(.*)<\/PackageVersion>\s*$'
+          TAG_FORMAT: '*'
+          NUGET_KEY: ${{secrets.NUGET_API_KEY}}

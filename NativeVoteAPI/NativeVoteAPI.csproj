@@ -7,9 +7,10 @@
         Use CS2 native vote easily
         </Description>
         <Authors>tuna</Authors>
-        <Version>0.0.1</Version>
+        <Version>0.1.0</Version>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <RepositoryUrl>https://github.com/fltuna/NativeVoteAPI-CS2</RepositoryUrl>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
 
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
@@ -26,6 +27,6 @@
 
     <ItemGroup>
         <PackageReference Include="CounterStrikeSharp.API" Version="1.0.305" />
-        <None Include="../README.md" Pack="true" PackagePath="\"/>
+        <None Include="..\README.md" Pack="true" PackagePath="\"/>
     </ItemGroup>
 </Project>
