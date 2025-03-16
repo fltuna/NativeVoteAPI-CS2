@@ -1,5 +1,7 @@
 ﻿# NativeVoteAPI CS2
 
+CounterStrikeSharp implementation of API for Counter-Strike 2's native vote.
+
 ## Caution
 
 This is just an API for native vote!
