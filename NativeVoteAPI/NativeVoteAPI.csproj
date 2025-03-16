@@ -7,8 +7,9 @@
         Use CS2 native vote easily
         </Description>
         <Authors>tuna</Authors>
-
         <Version>0.0.1</Version>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <RepositoryUrl>https://github.com/fltuna/NativeVoteAPI-CS2</RepositoryUrl>
 
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
