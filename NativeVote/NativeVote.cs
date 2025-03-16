@@ -5,9 +5,10 @@ using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Cvars;
 using CounterStrikeSharp.API.Modules.UserMessages;
 using CounterStrikeSharp.API.Modules.Utils;
+using NativeVoteAPI;
 using NativeVoteAPI.API;
 
-namespace NativeVoteAPI;
+namespace NativeVote;
 
 public class NativeVoteApi: BasePlugin, INativeVoteApi
 {
@@ -25,7 +26,11 @@ public class NativeVoteApi: BasePlugin, INativeVoteApi
         _voteManager.Load();
 
         ApiInstance = this;
-        Capabilities.RegisterPluginCapability(INativeVoteApi.Capability, () => ApiInstance);
+
+        if (!hotReload)
+        {
+            Capabilities.RegisterPluginCapability(INativeVoteApi.Capability, () => ApiInstance);
+        }
     }
 
     public override void Unload(bool hotReload)

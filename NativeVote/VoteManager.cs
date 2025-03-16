@@ -3,10 +3,11 @@ using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.UserMessages;
 using CounterStrikeSharp.API.Modules.Utils;
+using NativeVoteAPI;
 using NativeVoteAPI.API;
 using Timer = CounterStrikeSharp.API.Modules.Timers.Timer;
 
-namespace NativeVoteAPI;
+namespace NativeVote;
 
 class VoteManager(NativeVoteApi plugin)
 {
