@@ -79,3 +79,9 @@ NativeVoteInfo nInfo = new NativeVoteInfo(voteIdentifier, displayString ,details
 // When the vote is successfully initiated, it will return InitializeAccepted.
 NativeVoteState state = _nativeVoteApi.InitiateVote(nInfo);
 ```
+
+
+## Special thanks
+
+- [CS2Fixes](https://github.com/Source2ZE/CS2Fixes) for the reference of [UserMessage and Panorama UI](https://github.com/Source2ZE/CS2Fixes/blob/main/src/panoramavote.cpp)
+
