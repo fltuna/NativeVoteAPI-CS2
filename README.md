@@ -37,7 +37,11 @@ Full example is here: [NativeVoteAPITest.cs](NativeVoteAPITest/NativeVoteApiTest
 
 Since valve fixed a XSS exploit in html text, we can't use custom string in normal mean.
 
-When we provide a custom ui text in `platform_<language name>.txt`(e.g. platform_english.txt) file and put both server and client, we are able to use custom text from plugin.
+When we provide a custom ui text in `platform_<language name>.txt`(e.g. platform_english.txt) file and put to `game/csgo/resource/` both server and client, then we are able to use custom text from plugin.
+
+### Note
+
+We can use picture using `<img src='{s:s1}'>`, but it will display only once. after second one is not showing correctly.
 
 ### Example
 
