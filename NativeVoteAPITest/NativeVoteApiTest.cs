@@ -58,6 +58,12 @@ public class NativeVoteApiTest: BasePlugin
             Server.PrintToChatAll($"{info!.VoteInfo.voteIdentifier}");
             Server.PrintToChatAll("Vote cancelled!!!");
         };
+
+        // To register OnPlayerCastVote listener
+        _nativeVoteApi.OnPlayerCastVote += (info, player, voteOption) =>
+        {
+            Server.PrintToChatAll($"identifier: {info?.VoteInfo.voteIdentifier}, voteOption: {voteOption}, player: {player.PlayerName}");
+        };
         
         this.AddCommand("css_tsvote", "Initiate test vote", CmdInitiateVote);
         this.AddCommand("css_tcvote", "Cancel test vote", CmdCancelVote);
@@ -97,7 +103,7 @@ public class NativeVoteApiTest: BasePlugin
         string voteIdentifier = "TEST_VOTE!";
         
         // arguments information is provided in code document, see NativeVoteInfo.cs
-        NativeVoteInfo nInfo = new NativeVoteInfo(voteIdentifier, displayString ,detailsString, potentialClientsIndex, VoteThresholdType.AbsoluteValue, 0.5F, 5.0F);
+        NativeVoteInfo nInfo = new NativeVoteInfo(voteIdentifier, displayString ,detailsString, potentialClientsIndex, VoteThresholdType.AbsoluteValue, 0.5F, 20.0F);
 
         // When vote successfully initiated, it will return InitializeAccepted
         NativeVoteState state = _nativeVoteApi.InitiateVote(nInfo);

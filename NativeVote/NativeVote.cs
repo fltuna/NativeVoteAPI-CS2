@@ -52,12 +52,18 @@ public class NativeVoteApi: BasePlugin, INativeVoteApi
     {
         OnVoteCancel?.Invoke(voteInfo);
     }
+
+    public void InvokePlayerCastVoteEvent(CCSPlayerController client, VoteOption voteOption, YesNoVoteInfo? voteInfo = null)
+    {
+        OnPlayerCastVote?.Invoke(voteInfo, client, voteOption);
+    }
     
     
     public event Action<YesNoVoteInfo?>? OnVoteFail;
     public event Action<YesNoVoteInfo?>? OnVotePass;
     public event Action<YesNoVoteInfo?>? OnVoteCancel;
-    
+    public event Action<YesNoVoteInfo?, CCSPlayerController, VoteOption>? OnPlayerCastVote;
+
     public NativeVoteState InitiateVote(NativeVoteInfo vote)
     {
         if (_voteManager == null)

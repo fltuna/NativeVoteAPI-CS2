@@ -1,4 +1,5 @@
-﻿using CounterStrikeSharp.API.Core.Capabilities;
+﻿using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Core.Capabilities;
 
 namespace NativeVoteAPI.API;
 
@@ -9,6 +10,7 @@ public interface INativeVoteApi
     public event Action<YesNoVoteInfo?> OnVoteFail;
     public event Action<YesNoVoteInfo?> OnVotePass;
     public event Action<YesNoVoteInfo?> OnVoteCancel;
+    public event Action<YesNoVoteInfo?, CCSPlayerController, VoteOption> OnPlayerCastVote;
     
     /// <summary>
     /// Initiates a vote with the given IVote object.
@@ -34,4 +36,15 @@ public interface INativeVoteApi
     /// </summary>
     /// <returns>current vote information if vote is in progress. otherwise returns null</returns>
     public YesNoVoteInfo? GetCurrentVote();
+}
+
+public enum VoteOption
+{
+    VOTE_NOTINCLUDED = -1,
+    VOTE_OPTION1,
+    VOTE_OPTION2,
+    VOTE_OPTION3,
+    VOTE_OPTION4,
+    VOTE_OPTION5,
+    VOTE_UNCAST = 5,
 }

@@ -13,7 +13,7 @@ class VoteManager(NativeVoteApi plugin)
 {
     NativeVoteApi _plugin = plugin;
     
-    private CVoteController VoteController => Utilities.FindAllEntitiesByDesignerName<CVoteController>("vote_controller").First();
+    private CVoteController? VoteController => Utilities.FindAllEntitiesByDesignerName<CVoteController>("vote_controller").Last();
 
     private YesNoVoteInfo? _currentVote = null;
     
@@ -26,71 +26,73 @@ class VoteManager(NativeVoteApi plugin)
     
     public void Load()
     {
-        _plugin.AddCommandListener("vote", CmdListener, HookMode.Pre);
+        _plugin.RegisterEventHandler<EventVoteCast>(OnVoteCast);
         
     }
 
     public void Unload()
     {
-        _plugin.RemoveCommandListener("vote", CmdListener, HookMode.Pre);
+        _plugin.DeregisterEventHandler<EventVoteCast>(OnVoteCast);
     }
-    
-    
-    private HookResult CmdListener(CCSPlayerController? client, CommandInfo info)
+
+    private HookResult OnVoteCast(EventVoteCast @event, GameEventInfo info)
     {
+        Server.PrintToChatAll("VoteCast");
         if (!_voteInProgress)
             return HookResult.Continue;
+
+        if (VoteController == null)
+            return HookResult.Continue;
+
+        CCSPlayerController? client = @event.Userid;
         
         if (client == null)
             return HookResult.Continue;
-        
-        
-        // F1(YES) = option1
-        // F2(NO) = option2
-        if (!info.ArgString.Equals("option1") && !info.ArgString.Equals("option2"))
-            return HookResult.Continue;
-        
+
         if (_currentVote == null)
             return HookResult.Continue;
-        
-        if(!_currentVote.ClientVoteInfo.TryGetValue(client.Index, out VoteType voteType))
-            return HookResult.Continue;
-        
-        if(voteType != VoteType.NotParticipated)
-            return HookResult.Continue;
-        
-        if (info.ArgString.Equals("option1"))
+
+        VoteOption voteOption = (VoteOption)@event.VoteOption;
+
+        if (voteOption == VoteOption.VOTE_OPTION1)
         {
             ++_currentVote.YesVotes;
             _currentVote.ClientVoteInfo[client.Index] = VoteType.Yes;
         }
-        else if (info.ArgString.Equals("option2"))
-        { 
+        else if (voteOption == VoteOption.VOTE_OPTION2)
+        {
             ++_currentVote.NoVotes;
             _currentVote.ClientVoteInfo[client.Index] = VoteType.No;
         }
-
+        
         RefreshVotes();
-
+        
         if (_currentVote.TotalVotes >= _currentVote.VoteInfo.PotentialClients.Count)
         {
             EndVote();
         }
+
+        if (_currentVote == null)
+        {
+            Server.PrintToChatAll("Current vote null");
+        }
+        
+        _plugin.InvokePlayerCastVoteEvent(client, voteOption, _currentVote);
         
         return HookResult.Continue;
     }
+    
 
-    private void SendVoteStartUm(CCSPlayerController client)
+    private void SendVoteStartUm(RecipientFilter filter)
     {
         if(_currentVote == null)
             return;
         
-        RecipientFilter filter = new RecipientFilter();
-        filter.Add(client);
         UserMessage um = UserMessage.FromPartialName("VoteStart");
         um.SetInt("team", _currentVote.VoteInfo.TargetTeam);
         // Set this to 99 to make looks execute from server
         um.SetInt("player_slot", _currentVote.VoteInfo.VoteInitiator);
+        um.SetInt("vote_type", -1);
             
         // We can only use in-game vote related texts since valve fixed a XSS exploit.
         // #SFUI_vote_passed_nextlevel_extend
@@ -98,7 +100,6 @@ class VoteManager(NativeVoteApi plugin)
         um.SetString("details_str", _currentVote.VoteInfo.DetailsString);
         um.SetString("other_team_str", "#SFUI_otherteam_vote_unimplemented");
         um.SetBool("is_yes_no_vote", true);
-        um.SetInt("vote_type", 1);
             
         um.Send(filter);
     }
@@ -153,45 +154,41 @@ class VoteManager(NativeVoteApi plugin)
     {
         if(_voteInProgress || _currentVoteState != NativeVoteState.NoActiveVote)
             return _currentVoteState;
-        
+
+        if (VoteController == null)
+            return _currentVoteState;
         
         _voteInProgress = true;
         _currentVoteState = NativeVoteState.Initializing;
         
-        VoteController.IsYesNoVote = true;
-        VoteController.OnlyTeamToVote = -1;
+
+        VoteController.PotentialVotes = vote.PotentialClients.Count;
+        //VoteController.IsYesNoVote = true;
+        VoteController.ActiveIssueIndex = 2;
+        //VoteController.OnlyTeamToVote = -1;
 
         for (int i = VoteController.VoteOptionCount.Length-1; i >= 0; i--)
         {
             VoteController.VoteOptionCount[i] = 0;
         }
-
-        var voteOptionEvent = new EventVoteOptions(true)
-        {
-            Option1 = "Yes",
-            Option2 = "No",
-            Option3 = "",
-            Option4 = "",
-            Option5 = "",
-        };
-
-        VoteController.PotentialVotes = vote.PotentialClients.Count;
         
         
 
         _currentVote = new YesNoVoteInfo(vote);
-        
-        @voteOptionEvent.FireEvent(false);
+
+        RefreshVotes();
         _plugin.AddTimer(0.2F, () =>
         {
+            var filter = new RecipientFilter();
             foreach (CCSPlayerController cl in Utilities.GetPlayers())
             {
                 if(cl.IsBot || cl.IsHLTV)
                     continue;
             
-                SendVoteStartUm(cl);
+                filter.Add(cl);
             }
-            RefreshVotes();
+            
+            SendVoteStartUm(filter);
 
             endVoteTimer = _plugin.AddTimer(_currentVote.VoteInfo.VoteDuration, EndVote);
         });
@@ -279,7 +276,6 @@ class VoteManager(NativeVoteApi plugin)
         }
 
         DelayedVoteFinishUpdate();
-        _currentVote = null;
     }
     
     private void RefreshVotes()
@@ -287,10 +283,13 @@ class VoteManager(NativeVoteApi plugin)
         if(_currentVote == null)
             return;
         
+        if (VoteController == null)
+            return;
+        
         var @event = new EventVoteChanged(true)
         {
-            VoteOption1 = _currentVote.YesVotes,
-            VoteOption2 = _currentVote.NoVotes,
+            VoteOption1 = VoteController.VoteOptionCount[0],
+            VoteOption2 = VoteController.VoteOptionCount[1],
             VoteOption3 = VoteController.VoteOptionCount[2],
             VoteOption4 = VoteController.VoteOptionCount[3],
             VoteOption5 = VoteController.VoteOptionCount[4],
@@ -306,10 +305,27 @@ class VoteManager(NativeVoteApi plugin)
     /// </summary>
     private void DelayedVoteFinishUpdate()
     {
-        _plugin.AddTimer(5.0F, () =>
+        _plugin.AddTimer(5.0F, Finish);
+    }
+
+    private void Finish()
+    {
+        if(VoteController == null)
+            return;
+        
+        
+        for (int i = 0; i < 5; i++)
         {
-            _currentVoteState = NativeVoteState.NoActiveVote;
-            _voteInProgress = false;
-        });
+            VoteController.VoteOptionCount[i] = 0;
+        }
+        
+        foreach (CCSPlayerController client in Utilities.GetPlayers())
+        {
+            VoteController.VotesCast[client.Slot] = (int)VoteOption.VOTE_UNCAST;
+        }
+        
+        _currentVoteState = NativeVoteState.NoActiveVote;
+        _voteInProgress = false;
+        _currentVote = null;
     }
 }
