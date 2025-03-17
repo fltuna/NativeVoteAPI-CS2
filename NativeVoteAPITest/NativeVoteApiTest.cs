@@ -21,17 +21,15 @@ public class NativeVoteApiTest: BasePlugin
     // You should initialize plugin capability on OnAllPluginsLoaded 
     public override void OnAllPluginsLoaded(bool hotReload)
     {
-        // When NativeVoteAPI is not loaded, it will throw the exception ->
+        // When NativeVoteAPI is not loaded, it will throw the exception -
         try
         {
             _nativeVoteApi = INativeVoteApi.Capability.Get();
         }
         catch (Exception e)
-        {
-            // Ignored because plugin will stop loading.
-        }
+        {}
 
-        // -> And plugin should stop loading or implement some feature to block the NativeVoteAPI from using.
+        // - And plugin should stop loading or implement some feature to block the use of NativeVoteAPI.
         if (_nativeVoteApi == null)
         {
             Server.PrintToConsole("NativeVote API is not available.");
@@ -89,10 +87,10 @@ public class NativeVoteApiTest: BasePlugin
         var potentialClientsIndex = potentialClients.Select(p => p.Index).ToList();
         
         
-        // You can only use builtin SFUI_vote texts in display string.
-        // for instance, you can use these strings:
-        // #SFUI_vote_passed_nextlevel_extend -> can be use the details string (custom string)
-        // #SFUI_Vote_None -> blank vote
+        // You can only use built-in SFUI_vote texts in the display string.
+        // For instance, you can use these strings:
+        // #SFUI_vote_passed_nextlevel_extend -> Allows embedding a details string (custom string).
+        // #SFUI_Vote_None -> Blank vote
         //
         // Or you can use custom file for fully customizable text. See README.md
         //
@@ -102,10 +100,10 @@ public class NativeVoteApiTest: BasePlugin
         // You can set vote identifier to check your vote in OnVotePass, OnVoteFail, OnVoteCancel.
         string voteIdentifier = "TEST_VOTE!";
         
-        // arguments information is provided in code document, see NativeVoteInfo.cs
+        // Arguments information is provided in code document, see NativeVoteInfo.cs
         NativeVoteInfo nInfo = new NativeVoteInfo(voteIdentifier, displayString ,detailsString, potentialClientsIndex, VoteThresholdType.AbsoluteValue, 0.5F, 20.0F);
 
-        // When vote successfully initiated, it will return InitializeAccepted
+        // When the vote is successfully initiated, it will return InitializeAccepted.
         NativeVoteState state = _nativeVoteApi.InitiateVote(nInfo);
 
 
@@ -130,7 +128,7 @@ public class NativeVoteApiTest: BasePlugin
         if(client == null)
             return;
         
-        // When vote successfully to initiating cancel, it will return Cancelling
+        // When the vote is successfully initiated to cancel, it will return Cancelling
         NativeVoteState state = _nativeVoteApi.CancelVote();
         
         

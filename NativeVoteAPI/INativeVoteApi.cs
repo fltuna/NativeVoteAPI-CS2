@@ -26,13 +26,13 @@ public interface INativeVoteApi
     public NativeVoteState CancelVote();
     
     /// <summary>
-    /// For get current vote state.
+    /// To get the current vote state
     /// </summary>
     /// <returns>Returns a NativeVoteState to describe the current vote state.</returns>
     public NativeVoteState GetCurrentVoteState();
     
     /// <summary>
-    /// For get current vote.
+    /// To get the current vote state
     /// </summary>
     /// <returns>current vote information if vote is in progress. otherwise returns null</returns>
     public YesNoVoteInfo? GetCurrentVote();

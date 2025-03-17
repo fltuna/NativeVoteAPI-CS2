@@ -6,7 +6,7 @@ CounterStrikeSharp implementation of API for Counter-Strike 2's native vote.
 
 This is just an API for native vote!
 
-This API does not have functionality by itself! Please create your own plug-in!
+This API does not provide standalone functionality. You need to create your own plugin to use it.
 
 
 ## Features
@@ -37,11 +37,11 @@ Full example is here: [NativeVoteAPITest.cs](NativeVoteAPITest/NativeVoteApiTest
 
 Since valve fixed a XSS exploit in html text, we can't use custom string in normal mean.
 
-When we provide a custom ui text in `platform_<language name>.txt`(e.g. platform_english.txt) file and put to `game/csgo/resource/` both server and client, then we are able to use custom text from plugin.
+When we provide custom UI text in a `platform_<language name>.txt` file (e.g. platform_english.txt) and place it in the `game/csgo/resource/` directory on both server and client, we can use custom text from the plugin.
 
 ### Note
 
-We can use picture using `<img src='{s:s1}'>`, but it will display only once. after second one is not showing correctly.
+We can use pictures using `<img src='{s:s1}'>`, but it will display only once. after second one is not showing correctly.
 
 ### Example
 
@@ -76,6 +76,6 @@ string voteIdentifier = "TEST_VOTE!";
 
 NativeVoteInfo nInfo = new NativeVoteInfo(voteIdentifier, displayString ,detailsString, potentialClientsIndex, VoteThresholdType.AbsoluteValue, 0.5F, 5.0F);
 
-// When vote successfully initiated, it will return InitializeAccepted
+// When the vote is successfully initiated, it will return InitializeAccepted.
 NativeVoteState state = _nativeVoteApi.InitiateVote(nInfo);
 ```
