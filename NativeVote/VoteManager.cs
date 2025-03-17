@@ -160,17 +160,10 @@ class VoteManager(NativeVoteApi plugin)
         
         _voteInProgress = true;
         _currentVoteState = NativeVoteState.Initializing;
-        
 
+        ResetVoteController();
         VoteController.PotentialVotes = vote.PotentialClients.Count;
-        //VoteController.IsYesNoVote = true;
         VoteController.ActiveIssueIndex = 2;
-        //VoteController.OnlyTeamToVote = -1;
-
-        for (int i = VoteController.VoteOptionCount.Length-1; i >= 0; i--)
-        {
-            VoteController.VoteOptionCount[i] = 0;
-        }
         
         
 
@@ -312,20 +305,27 @@ class VoteManager(NativeVoteApi plugin)
     {
         if(VoteController == null)
             return;
+
+        ResetVoteController();
         
+        _currentVoteState = NativeVoteState.NoActiveVote;
+        _voteInProgress = false;
+        _currentVote = null;
+    }
+
+    private void ResetVoteController()
+    {
+        if(VoteController == null)
+            return;
+        
+        for (int i = 0; i < Server.MaxPlayers; i++)
+        {
+            VoteController.VotesCast[i] = (int)VoteOption.VOTE_UNCAST;
+        }
         
         for (int i = 0; i < 5; i++)
         {
             VoteController.VoteOptionCount[i] = 0;
         }
-        
-        foreach (CCSPlayerController client in Utilities.GetPlayers())
-        {
-            VoteController.VotesCast[client.Slot] = (int)VoteOption.VOTE_UNCAST;
-        }
-        
-        _currentVoteState = NativeVoteState.NoActiveVote;
-        _voteInProgress = false;
-        _currentVote = null;
     }
 }
