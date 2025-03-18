@@ -7,7 +7,7 @@ public class NativeVoteInfo
     private const float DefaultVoteThresholdPercentage = 0.5F;
     private const float MinimumVoteThresholdAbsolute = 1.0F;
     
-    public string voteIdentifier { get; set; }
+    public string voteIdentifier { get; private set; }
     public string DisplayString { get; private set; }
     public string DetailsString { get; private set; }
     public List<uint> PotentialClients { get; private set; }
@@ -74,6 +74,10 @@ public class NativeVoteInfo
             if (voteThreshold > 1.0 || voteThreshold < 0.0)
             {
                 VoteThreshold = DefaultVoteThresholdPercentage;
+            }
+            else
+            {
+                VoteThreshold = voteThreshold;
             }
         }
     }
