@@ -14,7 +14,7 @@ namespace NativeVote;
 public class NativeVoteApi: BasePlugin, INativeVoteApi
 {
     public override string ModuleName => "NativeVoteAPI";
-    public override string ModuleVersion => "0.2.1";
+    public override string ModuleVersion => "0.2.2";
     public override string ModuleAuthor => "tuna";
 
     public static INativeVoteApi ApiInstance = null!;
