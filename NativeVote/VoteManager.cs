@@ -255,7 +255,10 @@ class VoteManager(NativeVoteApi plugin)
         
         if (type == VoteThresholdType.Percentage)
         {
-            isVotePassed = (float)totalYesVotes / totalVotes >= threthold;
+            if (totalYesVotes != 0)
+            {
+                isVotePassed = (float)totalYesVotes / totalVotes >= threthold;
+            }
         }
         else
         {
