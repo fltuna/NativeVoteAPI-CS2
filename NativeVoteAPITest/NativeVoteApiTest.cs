@@ -96,12 +96,26 @@ public class NativeVoteApiTest: BasePlugin
         //
         string displayString = "#SFUI_Vote_None";
         string detailsString = "";
+
+        if (info.ArgCount >= 3)
+        {
+            if (info.ArgByIndex(1) == "c")
+            {
+                displayString = "#SFUI_vote_custom_vote_default";
+                detailsString = info.ArgByIndex(2);
+            }
+            else if (info.ArgByIndex(1) == "i")
+            {
+                displayString = "#SFUI_vote_custom_vote_image";
+                detailsString = info.ArgByIndex(2);
+            }
+        }
         
         // You can set vote identifier to check your vote in OnVotePass, OnVoteFail, OnVoteCancel.
         string voteIdentifier = "TEST_VOTE!";
         
         // Arguments information is provided in code document, see NativeVoteInfo.cs
-        NativeVoteInfo nInfo = new NativeVoteInfo(voteIdentifier, displayString ,detailsString, potentialClientsIndex, VoteThresholdType.AbsoluteValue, 0.5F, 20.0F);
+        NativeVoteInfo nInfo = new NativeVoteInfo(voteIdentifier, displayString ,detailsString, potentialClientsIndex, VoteThresholdType.Percentage, 0.5F, 20.0F);
 
         // When the vote is successfully initiated, it will return InitializeAccepted.
         NativeVoteState state = _nativeVoteApi.InitiateVote(nInfo);
