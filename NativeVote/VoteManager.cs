@@ -3,6 +3,7 @@ using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.UserMessages;
 using CounterStrikeSharp.API.Modules.Utils;
+using Microsoft.Extensions.Logging;
 using NativeVoteAPI;
 using NativeVoteAPI.API;
 using Timer = CounterStrikeSharp.API.Modules.Timers.Timer;
@@ -37,7 +38,6 @@ class VoteManager(NativeVoteApi plugin)
 
     private HookResult OnVoteCast(EventVoteCast @event, GameEventInfo info)
     {
-        Server.PrintToChatAll("VoteCast");
         if (!_voteInProgress)
             return HookResult.Continue;
 
@@ -74,7 +74,7 @@ class VoteManager(NativeVoteApi plugin)
 
         if (_currentVote == null)
         {
-            Server.PrintToChatAll("Current vote null");
+            _plugin.Logger.LogWarning($"Player ${client.PlayerName} has casted a vote, but there is no ongoing vote!");
         }
         
         _plugin.InvokePlayerCastVoteEvent(client, voteOption, _currentVote);
@@ -187,6 +187,8 @@ class VoteManager(NativeVoteApi plugin)
         });
 
         _currentVoteState = NativeVoteState.Voting;
+        
+        _plugin.Logger.LogInformation($"Starting vote. Vote Identifier: ${vote.voteIdentifier}, Potential clients: ${vote.PotentialClients.Count}, VoteThresholdType: ${vote.ThresholdType}, Vote threshold: ${vote.VoteThreshold}");
         return NativeVoteState.InitializeAccepted;
     }
 
@@ -202,6 +204,7 @@ class VoteManager(NativeVoteApi plugin)
         _plugin.InvokeVoteCancelEvent(_currentVote);
         DelayedVoteFinishUpdate();
 
+        _plugin.Logger.LogInformation($"Vote cancelled. Vote Identifier: ${_currentVote?.VoteInfo.voteIdentifier}, Potential clients: ${_currentVote?.VoteInfo.PotentialClients.Count}, VoteThresholdType: ${_currentVote?.VoteInfo.ThresholdType}, Vote threshold: ${_currentVote?.VoteInfo.VoteThreshold}");
         return NativeVoteState.Cancelling;
     }
 
@@ -228,6 +231,7 @@ class VoteManager(NativeVoteApi plugin)
             SendVoteFailUmAll();
             _plugin.InvokeVoteFailEvent();
             DelayedVoteFinishUpdate();
+            _plugin.Logger.LogWarning("Vote finished, but there is no ongoing vote");
             return;
         }
         
@@ -244,6 +248,7 @@ class VoteManager(NativeVoteApi plugin)
             SendVoteFailUmAll();
             _plugin.InvokeVoteFailEvent(_currentVote);
             DelayedVoteFinishUpdate();
+            _plugin.Logger.LogInformation($"Vote finished, but no votes. Vote Identifier: ${_currentVote?.VoteInfo.voteIdentifier}");
             return;
         }
         
@@ -268,6 +273,7 @@ class VoteManager(NativeVoteApi plugin)
             _plugin.InvokeVoteFailEvent(_currentVote);
         }
 
+        _plugin.Logger.LogInformation($"Vote finished. Vote Identifier: ${_currentVote?.VoteInfo.voteIdentifier}, Potential clients: ${_currentVote?.VoteInfo.PotentialClients.Count}, VoteThresholdType: ${_currentVote?.VoteInfo.ThresholdType}, Vote threshold: ${_currentVote?.VoteInfo.VoteThreshold}");
         DelayedVoteFinishUpdate();
     }
     

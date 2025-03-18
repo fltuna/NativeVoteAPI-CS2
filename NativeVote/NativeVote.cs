@@ -5,6 +5,7 @@ using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Cvars;
 using CounterStrikeSharp.API.Modules.UserMessages;
 using CounterStrikeSharp.API.Modules.Utils;
+using Microsoft.Extensions.Logging;
 using NativeVoteAPI;
 using NativeVoteAPI.API;
 
@@ -31,11 +32,17 @@ public class NativeVoteApi: BasePlugin, INativeVoteApi
         {
             Capabilities.RegisterPluginCapability(INativeVoteApi.Capability, () => ApiInstance);
         }
+        else
+        {
+            Logger.LogWarning("NativeVote API is not supported for hot-reload! Some problem(s) may occur.");
+        }
+        Logger.LogInformation("NativeVote API loaded");
     }
 
     public override void Unload(bool hotReload)
     {
         _voteManager?.Unload();
+        Logger.LogInformation("NativeVote API unloaded");
     }
 
     public void InvokeVoteFailEvent(YesNoVoteInfo? voteInfo = null)
