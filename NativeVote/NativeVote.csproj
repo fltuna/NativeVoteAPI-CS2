@@ -8,7 +8,7 @@
     </Description>
     <Authors>tuna</Authors>
 
-    <Version>0.2.3</Version>
+    <Version>0.2.4</Version>
     
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
