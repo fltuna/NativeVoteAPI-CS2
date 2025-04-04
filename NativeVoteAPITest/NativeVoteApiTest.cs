@@ -13,6 +13,9 @@ public class NativeVoteApiTest: BasePlugin
 
     // Declare the nativeVoteApi variable like this
     private static INativeVoteApi? _nativeVoteApi;
+
+
+    private const string VoteIdentifier = "NativeVoteAPITest";
     
     public override void Load(bool hotReload)
     {
@@ -39,6 +42,9 @@ public class NativeVoteApiTest: BasePlugin
         // To register OnVotePass listener
         _nativeVoteApi.OnVotePass += info =>
         {
+            if(info!.VoteInfo.voteIdentifier != VoteIdentifier)
+                return;
+
             Server.PrintToChatAll($"{info!.VoteInfo.voteIdentifier}");
             Server.PrintToChatAll("Vote passed!!!");
         };
@@ -46,6 +52,9 @@ public class NativeVoteApiTest: BasePlugin
         // To register OnVoteFail listener
         _nativeVoteApi.OnVoteFail += info =>
         {
+            if(info!.VoteInfo.voteIdentifier != VoteIdentifier)
+                return;
+
             Server.PrintToChatAll($"{info!.VoteInfo.voteIdentifier}");
             Server.PrintToChatAll("Vote failed!!!");
         };
@@ -53,6 +62,9 @@ public class NativeVoteApiTest: BasePlugin
         // To register OnVoteCancel listener
         _nativeVoteApi.OnVoteCancel += info =>
         {
+            if(info!.VoteInfo.voteIdentifier != VoteIdentifier)
+                return;
+
             Server.PrintToChatAll($"{info!.VoteInfo.voteIdentifier}");
             Server.PrintToChatAll("Vote cancelled!!!");
         };
@@ -60,6 +72,9 @@ public class NativeVoteApiTest: BasePlugin
         // To register OnPlayerCastVote listener
         _nativeVoteApi.OnPlayerCastVote += (info, player, voteOption) =>
         {
+            if(info!.VoteInfo.voteIdentifier != VoteIdentifier)
+                return;
+
             Server.PrintToChatAll($"identifier: {info?.VoteInfo.voteIdentifier}, voteOption: {voteOption}, player: {player.PlayerName}");
         };
         
@@ -94,8 +109,13 @@ public class NativeVoteApiTest: BasePlugin
         //
         // Or you can use custom file for fully customizable text. See README.md
         //
-        string displayString = "#SFUI_Vote_None";
-        string detailsString = "";
+        
+        // Dirty hack for custom vote string
+        string devider = "----------------------------------------------------------------------------------";
+        string devider2 = "||||||||||||||||||||||||||||||||||||||||||||";
+        
+        string displayString = "#SFUI_vote_passed_nextlevel_extend";
+        string detailsString = $"{devider2} {devider} The text we wanted to show {devider} {devider2}";
 
         if (info.ArgCount >= 3)
         {
@@ -112,10 +132,10 @@ public class NativeVoteApiTest: BasePlugin
         }
         
         // You can set vote identifier to check your vote in OnVotePass, OnVoteFail, OnVoteCancel.
-        string voteIdentifier = "TEST_VOTE!";
+        string voteIdentifier = "TestVoteIdentifier";
         
         // Arguments information is provided in code document, see NativeVoteInfo.cs
-        NativeVoteInfo nInfo = new NativeVoteInfo(voteIdentifier, displayString ,detailsString, potentialClientsIndex, VoteThresholdType.Percentage, 0.5F, 20.0F);
+        NativeVoteInfo nInfo = new NativeVoteInfo(voteIdentifier, displayString ,detailsString, potentialClientsIndex, VoteThresholdType.Percentage, 0.5F, 20.0F, initiator: client.Slot);
 
         // When the vote is successfully initiated, it will return InitializeAccepted.
         NativeVoteState state = _nativeVoteApi.InitiateVote(nInfo);
