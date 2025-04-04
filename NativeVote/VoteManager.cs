@@ -4,6 +4,7 @@ using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.UserMessages;
 using CounterStrikeSharp.API.Modules.Utils;
 using Microsoft.Extensions.Logging;
+using NativeVote.Events;
 using NativeVoteAPI;
 using NativeVoteAPI.API;
 using Timer = CounterStrikeSharp.API.Modules.Timers.Timer;
@@ -288,7 +289,7 @@ class VoteManager(NativeVoteApi plugin)
         if (VoteController == null)
             return;
         
-        var @event = new EventVoteChanged(true)
+        var @event = new EventVoteChangedOld(true)
         {
             VoteOption1 = VoteController.VoteOptionCount[0],
             VoteOption2 = VoteController.VoteOptionCount[1],

@@ -25,7 +25,7 @@
   </Target>
   
   <ItemGroup>
-    <PackageReference Include="CounterStrikeSharp.API" Version="1.0.305" />
+    <PackageReference Include="CounterStrikeSharp.API" Version="1.0.315" />
     <ProjectReference Include="..\NativeVoteAPI\NativeVoteAPI.csproj" />
   </ItemGroup>
   
