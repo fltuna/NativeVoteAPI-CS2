@@ -105,23 +105,23 @@ class VoteManager(NativeVoteApi plugin)
         um.Send(filter);
     }
 
-    private void SendVoteFailUmAll()
+    private void SendVoteFailUmAll(EndReason reason = EndReason.NoReason)
     {
         foreach (CCSPlayerController cl in Utilities.GetPlayers())
         {
             if(cl.IsBot || cl.IsHLTV)
                 continue;
             
-            SendVoteFailUm(cl);
+            SendVoteFailUm(cl, reason);
         }
     }
     
-    private void SendVoteFailUm(CCSPlayerController client)
+    private void SendVoteFailUm(CCSPlayerController client, EndReason reason)
     {
         RecipientFilter filter = new RecipientFilter();
         filter.Add(client);
         UserMessage um = UserMessage.FromPartialName("VoteFailed");
-        um.SetInt("reason", 0);
+        um.SetInt("reason", (int)reason);
         
         um.Send(filter);
     }
@@ -246,7 +246,7 @@ class VoteManager(NativeVoteApi plugin)
 
         if (totalVotes == 0)
         {
-            SendVoteFailUmAll();
+            SendVoteFailUmAll(EndReason.NotEnoughPlayersVoted);
             _plugin.InvokeVoteFailEvent(_currentVote);
             DelayedVoteFinishUpdate();
             _plugin.Logger.LogInformation($"Vote finished, but no votes. Vote Identifier: ${_currentVote?.VoteInfo.voteIdentifier}");
@@ -273,7 +273,7 @@ class VoteManager(NativeVoteApi plugin)
         }
         else
         {
-            SendVoteFailUmAll();
+            SendVoteFailUmAll(EndReason.NotEnoughPlayersVoted);
             _plugin.InvokeVoteFailEvent(_currentVote);
         }
 
