@@ -1,5 +1,7 @@
-﻿using CounterStrikeSharp.API;
+﻿using System.Globalization;
+using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Core.Translations;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.UserMessages;
 using CounterStrikeSharp.API.Modules.Utils;
@@ -82,9 +84,20 @@ class VoteManager(NativeVoteApi plugin)
         
         return HookResult.Continue;
     }
+
+    private void SendVoteStartUmAll()
+    {
+        foreach (CCSPlayerController cl in Utilities.GetPlayers())
+        {
+            if(cl.IsBot || cl.IsHLTV)
+                continue;
+            
+            SendVoteStartUm(cl);
+        }
+    }
     
 
-    private void SendVoteStartUm(RecipientFilter filter)
+    private void SendVoteStartUm(CCSPlayerController player)
     {
         if(_currentVote == null)
             return;
@@ -98,11 +111,16 @@ class VoteManager(NativeVoteApi plugin)
         // We can only use in-game vote related texts since valve fixed a XSS exploit.
         // #SFUI_vote_passed_nextlevel_extend
         um.SetString("disp_str", _currentVote.VoteInfo.DisplayString);
-        um.SetString("details_str", _currentVote.VoteInfo.DetailsString);
+
+        if (_currentVote.VoteInfo.TranslatableVoteTexts != null && _currentVote.VoteInfo.TranslatableVoteTexts.DetailsTranslation != null)
+            um.SetString("details_str", _currentVote.VoteInfo.TranslatableVoteTexts.Localizer.ForPlayer(player, _currentVote.VoteInfo.TranslatableVoteTexts.DetailsTranslation.TranslationKey, _currentVote.VoteInfo.TranslatableVoteTexts.DetailsTranslation.TranslationArgs));
+        else
+            um.SetString("details_str", _currentVote.VoteInfo.DetailsString);
+            
         um.SetString("other_team_str", "#SFUI_otherteam_vote_unimplemented");
         um.SetBool("is_yes_no_vote", true);
             
-        um.Send(filter);
+        um.Send(player);
     }
 
     private void SendVoteFailUmAll(EndReason reason = EndReason.NoReason)
@@ -117,13 +135,11 @@ class VoteManager(NativeVoteApi plugin)
     }
     
     private void SendVoteFailUm(CCSPlayerController client, EndReason reason)
-    {
-        RecipientFilter filter = new RecipientFilter();
-        filter.Add(client);
+    {;
         UserMessage um = UserMessage.FromPartialName("VoteFailed");
         um.SetInt("reason", (int)reason);
         
-        um.Send(filter);
+        um.Send(client);
     }
 
     
@@ -140,15 +156,13 @@ class VoteManager(NativeVoteApi plugin)
     
     private void SendVotePassUm(CCSPlayerController client)
     {
-        RecipientFilter filter = new RecipientFilter();
-        filter.Add(client);
         UserMessage um = UserMessage.FromPartialName("VotePass");
         um.SetInt("team", -1);
         um.SetInt("vote_type", 2);
         um.SetString("disp_str", "#SFUI_vote_passed");
         um.SetString("details_str", "");
         
-        um.Send(filter);
+        um.Send(client);
     }
 
     public NativeVoteState InitiateVote(NativeVoteInfo vote)
@@ -173,17 +187,7 @@ class VoteManager(NativeVoteApi plugin)
         RefreshVotes();
         _plugin.AddTimer(0.2F, () =>
         {
-            var filter = new RecipientFilter();
-            foreach (CCSPlayerController cl in Utilities.GetPlayers())
-            {
-                if(cl.IsBot || cl.IsHLTV)
-                    continue;
-            
-                filter.Add(cl);
-            }
-            
-            SendVoteStartUm(filter);
-
+            SendVoteStartUmAll();
             endVoteTimer = _plugin.AddTimer(_currentVote.VoteInfo.VoteDuration, EndVote);
         });
 
