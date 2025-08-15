@@ -9,7 +9,7 @@ namespace NativeVoteAPITest;
 public class NativeVoteApiTest: BasePlugin
 {
     public override string ModuleName => "NativeVoteAPI test";
-    public override string ModuleVersion => "0.3.0";
+    public override string ModuleVersion => "0.3.1";
 
     // Declare the nativeVoteApi variable like this
     private static INativeVoteApi? _nativeVoteApi;

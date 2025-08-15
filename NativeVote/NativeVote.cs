@@ -1,5 +1,6 @@
 ﻿using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Core.Attributes;
 using CounterStrikeSharp.API.Core.Capabilities;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Cvars;
@@ -11,10 +12,11 @@ using NativeVoteAPI.API;
 
 namespace NativeVote;
 
+[MinimumApiVersion(334)]
 public class NativeVoteApi: BasePlugin, INativeVoteApi
 {
     public override string ModuleName => "NativeVoteAPI";
-    public override string ModuleVersion => "0.3.0";
+    public override string ModuleVersion => "0.3.1";
     public override string ModuleAuthor => "tuna";
 
     public static INativeVoteApi ApiInstance = null!;
